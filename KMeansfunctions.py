@@ -22,7 +22,7 @@ def f_importance(centroids, X):
 
 def kmeans_performance(df, labels, kmeansobject, original_y):
     """This function executes the process of removing a feature, and recalculating the centroids, then calculating the accuracy. 
-    It returns a list of accuracy scores after removal of each progressive feature.
+    It returns a list of accuracy scores after progressively removing each feature.
 
     Args:
         df (Pandas Dataframe): A pandas dataframe containing the original data of the datset
@@ -46,26 +46,25 @@ def kmeans_performance(df, labels, kmeansobject, original_y):
         
         membership_conv = kmeansobject.predict(df_temp.values)
         membership_conv = membership_conv.tolist()
-        mem_length = max(membership_conv)+1 #addition of 1, because of the existance of the zeroth cluster
 
-        membership_conv = membership_conversion(membership_conv,mem_length)
+        membership_conv = membership_conversion(membership_conv)
         y_pred = np.argmax(membership_conv, axis=1)
         errors_kmeans.append(accuracy_score(original_y, y_pred))
     return errors_kmeans
 
 
-def membership_conversion(membership, cluster_nrs):
-    """Reformats a list of values containing membership to a particular cluster to a dummisized format.
+def membership_conversion(membership):
+    """Reformats an integer list of memberships of datapoints to clusters to an array of binary membership
     Example:
-    [0,2] with a max of 3 clusters would return array([[1,0,0],[0,0,1]])
+    membership_conversions([0,2], where the first point belongs to cluster 0, and the second point to cluster 2, would return array([[1,0,0],[0,0,1]])
 
     Args:
         membership (list): List containing which cluster prototype each value belongs to, eg. [5 5 5 1 0 7 0 0 0 5 5 0 0 5 0 5 0 5 5 0 0 5 1]
-        cluster_nrs (int): Nr. of clusters, eg. 7
 
     Returns:
         Numpy array: A numpy array of values in dummisized format.
     """    
+    cluster_nrs = max(membership)+1 #addition of 1, because of the existance of the zeroth cluster
     for index, num in enumerate(membership):
         insertion = np.zeros(cluster_nrs)
         insertion[num] = 1

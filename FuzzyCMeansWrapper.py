@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.base import MultiOutputMixin, BaseEstimator
 import skfuzzy as fuzz
+import pandas
+from sklearn.metrics import accuracy_score
 
 class FuzzyCMeans(MultiOutputMixin, BaseEstimator):
 
@@ -31,3 +33,20 @@ class FuzzyCMeans(MultiOutputMixin, BaseEstimator):
                 f_values += np.abs(xi[1]-xj[1])
         
         return f_values/np.sum(f_values)
+
+
+def fcmperformance(df, FuzzyCMeans_labels, FuzzyCMeansObject, y_true_fcm):
+    errors_fuzzycmeans = [1.0]
+    exclude_fuzzycmeans = []
+
+    for fi in FuzzyCMeans_labels:
+
+        df_temp = df.copy()
+        exclude_fuzzycmeans.append(fi)
+
+        for column in exclude_fuzzycmeans:
+            df_temp[column] = df_temp[column].mean()
+
+        y_pred = np.argmax(FuzzyCMeansObject.predict(df_temp.values), axis=1)
+        errors_fuzzycmeans.append(accuracy_score(y_true_fcm, y_pred))
+    return errors_fuzzycmeans

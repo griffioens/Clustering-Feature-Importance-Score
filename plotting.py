@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -26,7 +25,7 @@ def resultplot(datasets, which="both"):
     for dataset in datasets:
         # loading the performance scores dataset
         df = pd.read_excel('./error_scores/error_scores_'+dataset+'.xlsx')
-        df = df.iloc[:,2:]
+        df = df.iloc[:,1:]
 
         # Creating the lines in the plot
         if which == "Kmeans" or which == "both":
@@ -36,8 +35,8 @@ def resultplot(datasets, which="both"):
 
         if which == "Fuzzycmeans" or which == "both":
             sns.lineplot(x = range(0,len(df)), y=df["SHAP FuzzyCMeans"], marker='D', markersize=10, label = "SHAP FuzzyCMeans")
-            sns.lineplot(x = range(0,len(df)), y=df["PFBI FuzzyCMeans"], marker='D', markersize=10, label = "PBFI FuzzyCMeans")
-            plt.gca().fill_between(range(0,len(df)), df["SHAP FuzzyCMeans"], df["PFBI FuzzyCMeans"], alpha=0.2, color='pink')
+            sns.lineplot(x = range(0,len(df)), y=df["PBFI FuzzyCMeans"], marker='D', markersize=10, label = "PBFI FuzzyCMeans")
+            plt.gca().fill_between(range(0,len(df)), df["SHAP FuzzyCMeans"], df["PBFI FuzzyCMeans"], alpha=0.2, color='pink')
 
 
         # Creating the other items of the plot
@@ -46,18 +45,10 @@ def resultplot(datasets, which="both"):
         plt.xticks(np.arange(0, len(df), 1.0))
 
         plt.xlabel('rank', fontsize=18)
-        plt.ylabel('accuracy', fontsize=18)
-
-
-        # Creating the Results sub-folder if it doesn't exist yet
-        script_dir = os.getcwd()
-        results_dir = os.path.join(script_dir, 'Plots/')
-
-        if not os.path.isdir(results_dir):
-            os.makedirs(results_dir)
+        plt.ylabel('performance', fontsize=18)
 
         # Saving the folder    
-        plt.savefig(results_dir+dataset+which+'.pdf', bbox_inches='tight')
+        plt.savefig("./plots/"+dataset+which+'.pdf', bbox_inches='tight')
         numberplots +=1
         print(f"Completed figure {numberplots} out of {totalplots} total")
         plt.close()
